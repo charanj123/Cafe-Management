@@ -1,0 +1,60 @@
+{% extends "users/layout.html" %}
+
+{% block body %}
+
+
+
+    {% if message %}
+    <div> {{ message }} </div>
+    {% endif %}
+
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css'%}">
+    <div class="login-box">
+        <h2>Login</h2>
+        <form action="{% url 'login' %}" method="post">
+            {% csrf_token %} {% load static %}
+
+            <div class="user-box">
+                <input type="email" name="username" required="">
+                <label>Email</label>
+            </div>
+
+            <div class="user-box">
+                <input type="password" name="password" required="">
+                <label>Password</label>
+            </div>
+
+
+            <a href="">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <button style="padding: 3px;  background-color: transparent; border: 0px solid ; color: #03e9f4; ">LOGIN</button>
+            </a>
+
+        </form>
+        <center style="color: #03e9f4;">Don't have account <a href="/users/signup"> Register </a></div>
+    </center>
+    </div>
+
+
+    <! home floater >
+    <div class="fab-container">
+        <div class="fab fab-icon-holder">
+            <i class="fas fa-question material-icons">add</i>
+        </div>
+        <ul class="fab-options">
+            <li>
+                <div>
+                    {% load static %}
+                    <a href="/"><img src={% static 'icons/float_home.png' %} alt="home"></a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+
+
+{% endblock %}

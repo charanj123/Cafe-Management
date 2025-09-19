@@ -1,0 +1,59 @@
+{% extends 'home/base.html' %}
+
+
+{% block title %}
+cart Menu
+{% endblock title %}
+
+{% block body %}
+{% load static %}
+{% block content %}
+    <h1>Your Cart</h1>
+
+    {% if cart_items %}
+        <ul>
+            {% for cart_item in cart_items %}
+                <li>
+                    {{ cart_item.item.product.product_name }} - Quantity: {{ cart_item.item.quantity }} - Price: ${{ cart_item.item.product.price }} - Total: ${{ cart_item.item_total }}
+                    <form method="POST" action="{% url 'cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ cart_item.item.product.id }}">
+                        <input type="hidden" name="action" value="increase">
+                        <button type="submit">Increase</button>
+                    </form>
+                    <form method="POST" action="{% url 'cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ cart_item.item.product.id }}">
+                        <input type="hidden" name="action" value="decrease">
+                        <button type="submit">Decrease</button>
+                    </form>
+                    <form method="POST" action="{% url 'cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ cart_item.item.product.id }}">
+                        <input type="hidden" name="action" value="remove">
+                        <button type="submit">Remove</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+        <hr>
+        <p>Total Items: {{ total_items }}</p>
+        <p>Total Price: ${{ total_price }}</p>
+    {% else %}
+        <p>Your cart is empty.</p>
+    {% endif %}
+    <!-- Cart Count -->
+
+    <div class="fixed-bottom text-end p-3">
+        <a href="http://127.0.0.1:8000/checkout/" class="btn btn-primary">
+            {% if cart_items %}
+            {% for cart_item in cart_items %}
+            Cart ({{ cart_item.item.product.product_name }})
+            {% endfor %}
+            {% endif %}
+    
+        </a>
+    </div>
+{% endblock %}
+{% endblock body %}
+

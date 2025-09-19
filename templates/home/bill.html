@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Invoice</h1>
+    <p><strong>Name:</strong> {{ checkout.name }}</p>
+    <p><strong>Email:</strong> {{ checkout.email }}</p>
+    <p><strong>Address:</strong> {{ checkout.address }}, {{ checkout.city }}, {{ checkout.state }}, {{ checkout.zipcode }}, {{ checkout.country }}</p>
+    <hr>
+    <h2>Order Summary</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in cart_items %}
+            <tr>
+                <td>{{ item.item.product.name }}</td>
+                <td>{{ item.item.quantity }}</td>
+                <td>{{ item.item.product.price }}</td>
+                <td>{{ item.item_total }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Total Price</strong></td>
+                <td>{{ total_price }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

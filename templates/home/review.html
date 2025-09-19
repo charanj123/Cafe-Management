@@ -1,0 +1,25 @@
+{% extends 'home/base.html' %} 
+{% block title %} Review {% endblock title %} 
+
+{% block body %}
+
+{% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/second.css'%}">
+<div class="bigimage">
+
+    <div class="overlay">
+        <form method="POST" action="{% url 'review' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="text-white" for="user_review">Review</label>
+                <textarea class="form-control" id="user_review" name="user_review" rows="3" placeholder="Write your review here."></textarea>
+            </div>
+            <button class="btn btn2 my-2 my-sm-0" type="submit">Submit</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+{% endblock body %}

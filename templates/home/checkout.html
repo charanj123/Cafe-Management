@@ -1,0 +1,202 @@
+{% extends 'home/base.html' %}
+
+{% block title %}
+Checkout
+{% endblock %}
+
+{% block body %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/second.css' %}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+
+<br><br><br>
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="box-element" id="form-wrapper">
+            <!-- User input form -->
+            <form id="user-form">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required><br><br>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" required><br><br>
+                <label for="city">City:</label>
+                <input type="text" id="city" name="city" required><br><br>
+                <label for="state">State:</label>
+                <input type="text" id="state" name="state" required><br><br>
+                <label for="zipcode">Zip Code:</label>
+                <input type="text" id="zipcode" name="zipcode" required><br><br>
+                <label for="country">Country:</label>
+                <input type="text" id="country" name="country" required><br><br>
+                <button type="button" onclick="getUserInput()">Submit</button>
+            </form>
+
+            <!-- Billing page to display user input -->
+            <div id="billing-page" style="display: none;">
+                <h2>Billing Information</h2>
+                <p id="name-display"></p>
+                <p id="email-display"></p>
+                <p id="address-display"></p>
+                <p id="city-display"></p>
+                <p id="state-display"></p>
+                <p id="zipcode-display"></p>
+                <p id="country-display"></p>
+
+                <h2>Order Summary</h2>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.item.product }}</td>
+                            <td>{{ item.item.quantity }}</td>
+                            <td>{{ item.item.product.price }}</td>
+                            <td>{{ item.item_total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="3">Total:</th>
+                            <th>{{ total_price }}</th>
+                        </tr>
+                        <tr>
+                            <th colspan="3">Total Items:</th>
+                            <th>{{ total_items }}</th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="box-element">
+            <a class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
+            <hr>
+            <h2>Order Summary</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.item.product }}</td>
+                        <td>{{ cart_items }}</td>
+
+
+                        <td>{{ item.item.quantity }}</td>
+                        <td>{{ item.item.product.price }}</td>
+                        <td>{{ item.item_total }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="3">Total:</th>
+                        <th>{{ total_price }}</th>
+                    </tr>
+                    <tr>
+                        <th colspan="3">Total Items:</th>
+                        <th>{{ total_items }}</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!-- Download Invoice Button -->
+        <button id="generate-invoice-btn">Generate Invoice</button>
+
+
+    </div>
+</div>
+
+<script>
+    function getUserInput() {
+        // Get user input from form fields
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const city = document.getElementById("city").value.trim();
+        const state = document.getElementById("state").value.trim();
+        const zipcode = document.getElementById("zipcode").value.trim();
+        const country = document.getElementById("country").value.trim();
+
+        // Validate inputs
+        if (!name || !email || !address || !city || !state || !zipcode || !country) {
+            alert("Please fill in all fields.");
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            alert("Invalid email address.");
+            return;
+        }
+
+        // Display user input on the billing page
+        document.getElementById("name-display").textContent = `Name: ${name}`;
+        document.getElementById("email-display").textContent = `Email: ${email}`;
+        document.getElementById("address-display").textContent = `Address: ${address}`;
+        document.getElementById("city-display").textContent = `City: ${city}`;
+        document.getElementById("state-display").textContent = `State: ${state}`;
+        document.getElementById("zipcode-display").textContent = `Zip Code: ${zipcode}`;
+        document.getElementById("country-display").textContent = `Country: ${country}`;
+
+        // Show the billing page
+        document.getElementById("billing-page").style.display = "block";
+    }
+
+    document.getElementById("generate-invoice-btn").onclick = function (){
+        // Get user input from form fields
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const address = document.getElementById("address").value.trim();
+        const city = document.getElementById("city").value.trim();
+        const state = document.getElementById("state").value.trim();
+        const zipcode = document.getElementById("zipcode").value.trim();
+        const country = document.getElementById("country").value.trim();
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+
+        // Title
+        doc.setFontSize(18);
+        doc.text("Invoice", 14, 20);
+
+        // User Information
+        doc.setFontSize(12);
+        doc.text(`Name: ${name}`, 14, 30);
+        doc.text(`Email: ${email}`, 14, 35);
+        doc.text(`Address: ${address}`, 14, 40);
+        doc.text(`City: ${city}`, 14, 45);
+        doc.text(`State: ${state}`, 14, 50);
+        doc.text(`Zip Code: ${zipcode}`, 14, 55);
+        doc.text(`Country: ${country}`, 14, 60);
+
+        doc.save("Invoice.pdf");
+    }
+
+
+    
+    function validateEmail(email) {
+        const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        return re.test(email);
+    }
+</script>
+
+{% endblock %}

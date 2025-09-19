@@ -1,0 +1,46 @@
+{% extends 'home/base.html' %}
+
+{% block title %}
+Food Menu
+{% endblock title %}
+
+{% block body %}
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+
+<div class="container my-4">
+  <div class="text-center">
+    <h1>Delicious Food Menu</h1>
+    <p>Explore our collection of mouth-watering dishes!</p>
+  </div>
+  <div class="row">
+    {% for product in food %}
+    <div class="col-md-4 my-3">
+      <div class="card">
+        <img src="/media/{{ product.image }}" class="card-img-top" alt="{{ product.product_name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.product_name }}</h5>
+          <p class="card-text">{{ product.desc }}</p>
+          <p class="card-text"><strong>Price: {{ product.price }} Rs</strong></p>
+          <form method="post" class="d-flex justify-content-between">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <button type="submit" name="action" value="add" class="btn btn-success">Add to Cart</button>
+            <button type="submit" name="action" value="remove" class="btn btn-danger">Remove</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<!-- Cart Count -->
+<div class="fixed-bottom text-end p-3">
+  <a href="{% url 'cart' %}" class="btn btn-primary">
+    Cart ({{ cart_count }})
+  </a>
+</div>
+
+{% endblock body %}
